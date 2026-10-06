@@ -302,12 +302,13 @@
         }
 
         function flipToFront() {
-            cardInner.classList.remove('rotate-y-180');
-            showFrontBtn.classList.add('bg-gradient-to-r', 'from-cyan-400', 'to-blue-500', 'text-slate-950', 'shadow-md');
-            showFrontBtn.classList.remove('text-slate-400');
-            showBackBtn.classList.remove('bg-gradient-to-r', 'from-cyan-400', 'to-blue-500', 'text-slate-950', 'shadow-md');
-            showBackBtn.classList.add('text-slate-400');
-        }
+    cardInner.classList.remove('rotate-y-180');
+    showFrontBtn.classList.add('bg-gradient-to-r', 'from-cyan-400', 'to-blue-500', 'text-slate-950', 'shadow-md');
+    showFrontBtn.classList.remove('text-slate-400');
+    showBackBtn.classList.remove('bg-gradient-to-r', 'from-cyan-400', 'to-blue-500', 'text-slate-950', 'shadow-md');
+    showBackBtn.classList.add('text-slate-400');
+}
+
 
         // vCard Data Payload Generation
         function getVCardString() {
