@@ -137,7 +137,6 @@
             padding: 4px;
             background: conic-gradient(from 180deg, var(--accent-blue), transparent, var(--accent-blue));
             box-shadow: 0 0 20px var(--glow-blue);
-            cursor: pointer;
         }
 
         .avatar-img {
@@ -146,31 +145,6 @@
             border-radius: 50%;
             object-fit: cover;
             background-color: #1a2a3a;
-        }
-
-        /* Small Camera Badge Icon */
-        .camera-badge {
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 28px;
-            height: 28px;
-            background-color: var(--pill-bg);
-            border: 1px solid var(--accent-blue);
-            color: var(--accent-blue);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            box-shadow: 0 0 8px var(--glow-blue);
-            transition: all 0.2s ease;
-        }
-
-        .avatar-container:hover .camera-badge {
-            background-color: var(--accent-blue);
-            color: #000;
-            transform: scale(1.1);
         }
 
         .name-title {
@@ -391,14 +365,9 @@
                 </button>
                 
                 <!-- Profile Picture set directly to Rhia Asuncion.png -->
-                <div class="avatar-container" onclick="triggerPhotoUpload()" title="Click to change photo">
+                <div class="avatar-container">
                     <img id="profileImg" src="Rhia Asuncion.png" alt="Rhiaren R. Asuncion" class="avatar-img">
-                    <div class="camera-badge">
-                        <i class="fa-solid fa-camera"></i>
-                    </div>
                 </div>
-                <!-- Hidden file input for photo upload -->
-                <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="uploadPhoto(event)">
 
                 <div class="name-title">
                     RHIAREN R. ASUNCION <i class="fa-solid fa-circle-check verified-badge"></i>
@@ -466,34 +435,6 @@
     <script>
         const cardContainer = document.getElementById('cardContainer');
         const btnText = document.getElementById('btnText');
-        const profileImg = document.getElementById('profileImg');
-        const photoInput = document.getElementById('photoInput');
-
-        // Load saved photo from localStorage if present
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedPhoto = localStorage.getItem('rhiaren_card_photo');
-            if (savedPhoto) {
-                profileImg.src = savedPhoto;
-            }
-        });
-
-        // Trigger file input when camera icon / avatar is clicked
-        function triggerPhotoUpload() {
-            photoInput.click();
-        }
-
-        // Process uploaded image and save locally
-        function uploadPhoto(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profileImg.src = e.target.result;
-                    localStorage.setItem('rhiaren_card_photo', e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
 
         // Click handler to toggle flip
         function toggleCard() {
