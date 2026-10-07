@@ -390,9 +390,9 @@
                     <i class="fa-solid fa-share-nodes"></i>
                 </button>
                 
-                <!-- Profile Picture Container with Small Camera Badge Icon -->
+                <!-- Profile Picture set directly to Rhia Asuncion.png -->
                 <div class="avatar-container" onclick="triggerPhotoUpload()" title="Click to change photo">
-                    <img id="profileImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400" alt="Rhiaren R. Asuncion" class="avatar-img">
+                    <img id="profileImg" src="Rhia Asuncion.png" alt="Rhiaren R. Asuncion" class="avatar-img">
                     <div class="camera-badge">
                         <i class="fa-solid fa-camera"></i>
                     </div>
@@ -507,7 +507,6 @@
 
         // Share button function
         function shareCard(event) {
-            // Kunin ang kasalukuyang URL ng site
             const siteUrl = window.location.href;
 
             if (navigator.share) {
@@ -517,7 +516,6 @@
                     url: siteUrl
                 }).catch((err) => console.log('Error sharing:', err));
             } else {
-                // Fallback: Kopyahin ang link at mag-alert
                 navigator.clipboard.writeText(siteUrl).then(() => {
                     alert('Link copied to clipboard:\n' + siteUrl);
                 }).catch(() => {
