@@ -3,415 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rhiaren R. Asuncion | Digital Business Card</title>
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome 6 Icons CDN -->
+    <title>Rhiaren R. Asuncion - Digital Business Card</title>
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts: Inter, Plus Jakarta Sans & Caveat for handwritten accents -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- QRCode JS Library for dynamic QR generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #050a0f;
+            --card-bg: #091016;
+            --accent-blue: #00d2ff;
+            --glow-blue: rgba(0, 210, 255, 0.4);
+            --text-main: #ffffff;
+            --text-sub: #94b2cc;
+            --pill-bg: #111e29;
+            --pill-border: #182c3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
         body {
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-            background-color: #070c14;
-            color: #f3f4f6;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: radial-gradient(circle at 50% 50%, #061c2d 0%, #03060a 100%);
         }
 
-        .font-handwriting {
-            font-family: 'Caveat', cursive, sans-serif;
-        }
-
-        /* Neon Blue Glow Effects */
-        .neon-glow-blue {
-            box-shadow: 0 0 25px rgba(0, 210, 255, 0.45), inset 0 0 15px rgba(0, 210, 255, 0.2);
-        }
-        .neon-border-blue {
-            border-color: #00d2ff;
-            box-shadow: 0 0 18px rgba(0, 210, 255, 0.5);
-        }
-        .neon-button-glow {
-            box-shadow: 0 0 22px rgba(0, 210, 255, 0.55);
-        }
-        .card-container-glow {
-            box-shadow: 0 0 50px rgba(0, 136, 255, 0.18), 0 20px 40px -15px rgba(0, 0, 0, 0.85);
-        }
-
-        /* 3D Card Flip Mechanics */
-        .perspective-1000 {
+        /* Fixed Single Position Container */
+        .card-container {
+            width: 340px;
+            height: 600px;
             perspective: 1000px;
+            position: relative;
         }
-        .transform-style-3d {
+
+        /* Inner 3D Wrapper */
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .backface-hidden {
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-        }
-        .rotate-y-180 {
+
+        /* Flipped Class Controlled via JS Click */
+        .card-container.flipped .card-inner {
             transform: rotateY(180deg);
         }
 
-        /* Wave Ambient Background Accent */
-        .wave-bg {
-            background: radial-gradient(circle at 10% 10%, rgba(0, 210, 255, 0.3) 0%, transparent 60%),
-                        radial-gradient(circle at 90% 20%, rgba(0, 136, 255, 0.25) 0%, transparent 50%);
+        /* Shared Styling for Front & Back Sides */
+        .card-side {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            background: var(--card-bg);
+            border-radius: 28px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6),
+                        0 0 30px rgba(0, 210, 255, 0.15);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
+        /* Subtle Corner Glow */
+        .card-side::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, var(--glow-blue) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
         }
-        ::-webkit-scrollbar-track {
-            background: #070c14;
+
+        /* FRONT CARD */
+        .card-front {
+            z-index: 2;
+            align-items: center;
+            text-align: center;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #0088ff;
-            border-radius: 3px;
+
+        .share-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin-top: 10px;
+            margin-bottom: 14px;
+            border-radius: 50%;
+            padding: 4px;
+            background: conic-gradient(from 180deg, var(--accent-blue), transparent, var(--accent-blue));
+            box-shadow: 0 0 20px var(--glow-blue);
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #1a2a3a;
+        }
+
+        .online-badge {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 14px;
+            height: 14px;
+            background-color: var(--accent-blue);
+            border-radius: 50%;
+            border: 3px solid var(--card-bg);
+            box-shadow: 0 0 8px var(--accent-blue);
+        }
+
+        .name-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .verified-badge {
+            color: var(--accent-blue);
+            font-size: 1rem;
+        }
+
+        .role {
+            color: var(--accent-blue);
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .bio {
+            color: var(--text-sub);
+            font-size: 0.82rem;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            padding: 0 10px;
+        }
+
+        .social-grid {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .social-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--pill-bg);
+            border: 1px solid var(--pill-border);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .social-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 10px;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: #000;
+            box-shadow: 0 4px 15px var(--glow-blue);
+        }
+
+        .btn-primary .arrow {
+            margin-left: auto;
+        }
+
+        .btn-secondary {
+            background-color: var(--pill-bg);
+            border: 1px solid var(--pill-border);
+            color: #fff;
+        }
+
+        /* BACK CARD */
+        .card-back {
+            transform: rotateY(180deg);
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-header {
+            font-family: 'Caveat', cursive;
+            font-size: 2.2rem;
+            color: var(--accent-blue);
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .qr-container {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 16px;
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 15px var(--glow-blue);
+            margin: 5px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .qr-code {
+            width: 120px;
+            height: 120px;
+        }
+
+        .qr-subtext {
+            color: var(--text-sub);
+            font-size: 0.75rem;
+            margin-top: 6px;
+        }
+
+        .info-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .info-pill {
+            background: var(--pill-bg);
+            border: 1px solid var(--pill-border);
+            border-radius: 25px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-sub);
+            text-decoration: none;
+            font-size: 0.82rem;
+        }
+
+        .info-pill i {
+            color: var(--accent-blue);
+            font-size: 1rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        .info-pill span {
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .motto {
+            font-family: 'Caveat', cursive;
+            color: var(--text-sub);
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        /* Flip Toggle Control Button Below Card */
+        .flip-control-btn {
+            margin-top: 20px;
+            background: var(--pill-bg);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .flip-control-btn:hover {
+            background: var(--accent-blue);
+            color: #000;
+            box-shadow: 0 0 15px var(--glow-blue);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 overflow-x-hidden relative selection:bg-cyan-400 selection:text-black">
+<body>
 
-    <!-- Ambient Glowing Background Effect -->
-    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[110px] pointer-events-none"></div>
-
-    <!-- Controls Toolbar (Card Flip Toggle) -->
-    <div class="z-20 mb-6 flex items-center gap-3 bg-slate-900/80 backdrop-blur-md px-4 py-2 rounded-full border border-cyan-500/30 shadow-lg">
-        <button id="show-front-btn" onclick="flipToFront()" class="px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-md">
-            Front View
-        </button>
-        <button id="show-back-btn" onclick="flipToBack()" class="px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-slate-400 hover:text-white transition-all">
-            Back View (Connect)
-        </button>
-    </div>
-
-    <!-- Main Card Container with 3D Flip Mechanics -->
-    <div class="w-full max-w-[360px] sm:max-w-[380px] h-[680px] perspective-1000 z-10">
-        
-        <div id="card-inner" class="w-full h-full relative transform-style-3d border border-cyan-500/30 rounded-[32px] card-container-glow bg-[#0a101d]">
+    <!-- Single Position Flip Container -->
+    <div class="card-container" id="cardContainer">
+        <div class="card-inner">
             
-            <!-- ================= FRONT SIDE ================= -->
-            <div class="absolute inset-0 w-full h-full backface-hidden bg-[#0a101d] rounded-[32px] p-6 flex flex-col justify-between overflow-hidden border border-cyan-500/20">
+            <!-- FRONT SIDE -->
+            <div class="card-side card-front">
+                <div class="share-btn"><i class="fa-solid fa-share-nodes"></i></div>
                 
-                <!-- Background Curved Wave Accent -->
-                <div class="absolute top-0 left-0 right-0 h-40 wave-bg pointer-events-none"></div>
-                <svg class="absolute top-0 left-0 w-full opacity-30 pointer-events-none" viewBox="0 0 380 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 0H380V60C280 110 100 20 0 80V0Z" fill="url(#blueGradient)" />
-                    <defs>
-                        <linearGradient id="blueGradient" x1="0" y1="0" x2="380" y2="120" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#00d2ff" />
-                            <stop offset="1" stop-color="#0088ff" stop-opacity="0" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-
-                <!-- Top Header Bar -->
-                <div class="relative z-10 flex justify-between items-center pt-1">
-                    <button onclick="flipToBack()" class="text-xs text-cyan-400/80 hover:text-cyan-300 flex items-center gap-1.5 bg-slate-900/70 px-3 py-1 rounded-full border border-cyan-500/20 transition-all">
-                        <i class="fa-solid fa-rotate"></i> Flip
-                    </button>
-            
-                     <button onclick="shareProfile()" title="Share Business Card" class="w-10 h-10 rounded-full bg-slate-900/70 text-slate-300 hover:text-cyan-400 border border-cyan-500/20 flex items-center justify-center transition-all hover:border-cyan-500/50 hover:scale-105 active:scale-95">
-
-                        <i class="fa-solid fa-share-nodes text-base"></i>
-
-                    </button>
-
-
+                <div class="avatar-container">
+                    <img src="Rhia Asuncion.png" alt="Rhiaren R. Asuncion" class="avatar-img">
+                    <div class="online-badge"></div>
                 </div>
 
-                <!-- Profile Avatar & Details -->
-                <div class="relative z-10 flex flex-col items-center mt-1">
-                    <div class="relative w-36 h-36 rounded-full p-1.5 neon-border-blue bg-gradient-to-b from-cyan-400/40 to-transparent flex items-center justify-center">
-                       <img src="Rhia Asuncion.png"
-                             alt="Rhiaren R. Asuncion"
-                             class="w-full h-full object-cover rounded-full"
-                                 onerror="this.onerror=null; this.src='https://placehold.co/300x300/0088ff/ffffff?text=Rhiaren';">
-                        
-                        <!-- Online/Active Indicator -->
-                        <div class="absolute bottom-2 right-2 w-5 h-5 bg-emerald-500 rounded-full border-2 border-[#0a101d] shadow-[0_0_10px_#10b981]"></div>
-                    </div>
-
-                    <!-- Profile Info -->
-                    <div class="text-center mt-3">
-                        <div class="flex items-center justify-center gap-1.5">
-                            <h1 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">Rhiaren R. Asuncion</h1>
-                            <!-- Green Verified Badge -->
-                            <i class="fa-solid fa-circle-check text-emerald-500 text-lg sm:text-xl drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"></i>
-                        </div>
-                        
-                        <p class="text-cyan-400 font-semibold text-xs sm:text-sm mt-1 tracking-wide uppercase">
-                            Barista | Social Media Manager | Graphic Artist
-                        </p>
-                        
-                        <p class="text-slate-300 text-xs sm:text-sm mt-2 max-w-[280px] mx-auto font-normal leading-relaxed">
-                            Crafting bold visual identities, engaging social content, and the perfect cup of coffee.
-                        </p>
-                    </div>
-
-                    <!-- Social Media Links Row: Facebook, LinkedIn, Instagram -->
-                    <div class="flex items-center justify-center gap-4 mt-5">
-                        <!-- Facebook -->
-                        <a href="https://facebook.com/rix.rayray" target="_blank" rel="noopener" title="Facebook" class="w-11 h-11 rounded-2xl bg-[#1877f2]/20 border border-[#1877f2]/40 flex items-center justify-center text-[#1877f2] hover:bg-[#1877f2] hover:text-white hover:scale-110 transition-all duration-200 shadow-md">
-                            <i class="fa-brands fa-facebook-f text-xl"></i>
-                        </a>
-
-                        <!-- LinkedIn -->
-                        <a href="https://www.linkedin.com/in/rhiaren-asuncion-0b41b0252" target="_blank" rel="noopener" title="LinkedIn" class="w-11 h-11 rounded-2xl bg-[#0a66c2]/20 border border-[#0a66c2]/40 flex items-center justify-center text-[#0a66c2] hover:bg-[#0a66c2] hover:text-white hover:scale-110 transition-all duration-200 shadow-md">
-                            <i class="fa-brands fa-linkedin-in text-xl"></i>
-                        </a>
-
-                        <!-- Instagram -->
-                        <a href="https://instagram.com" target="_blank" rel="noopener" title="Instagram" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500/20 via-rose-500/20 to-purple-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-500 hover:text-white hover:scale-110 transition-all duration-200 shadow-md">
-                            <i class="fa-brands fa-instagram text-xl"></i>
-                        </a>
-                    </div>
+                <div class="name-title">
+                    RHIAREN R. ASUNCION <i class="fa-solid fa-circle-check verified-badge"></i>
                 </div>
+                <div class="role">Barista / Social Media Manager / Graphic Artist</div>
+                
+                <p class="bio">Crafting experiences, managing brands, and creating visuals.</p>
 
-                <!-- Call To Action Buttons -->
-                <div class="space-y-3 mb-2 z-10">
-                    <!-- Contact Me Button -->
-                    <a href="mailto:rhiarenasuncion12@gmail.com" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold text-sm sm:text-base flex items-center justify-between neon-button-glow transition-all duration-200 active:scale-[0.98]">
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-envelope text-lg"></i>
-                            <span>CONTACT ME </span>
-                        </div>
-                        <i class="fa-solid fa-arrow-right text-base"></i>
+                <!-- Social Grid with Messenger, LinkedIn, and Instagram -->
+                <div class="social-grid">
+                    <a href="https://m.me/rix.rayray" target="_blank" class="social-btn" title="Messenger">
+                        <i class="fa-brands fa-facebook-messenger"></i>
                     </a>
-
-                    <!-- Save Contact vCard Download Button -->
-                    <button onclick="downloadVCard()" class="w-full py-3.5 px-6 rounded-2xl bg-[#11192a] hover:bg-[#18243c] text-white font-medium text-sm sm:text-base border border-slate-800 hover:border-cyan-500/40 flex items-center justify-center gap-2.5 transition-all duration-200 active:scale-[0.98]">
-                        <i class="fa-solid fa-user-plus text-cyan-400 text-sm"></i>
-                        <span>Save Contact</span>
-                    </button>
+                    <a href="https://www.linkedin.com/in/rhiaren-asuncion-0b41b0252" target="_blank" class="social-btn" title="LinkedIn">
+                        <i class="fa-brands fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" class="social-btn" title="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
                 </div>
 
+                <a href="mailto:rhiarenasuncion12@gmail.com" class="action-btn btn-primary">
+                    <i class="fa-solid fa-envelope"></i> Contact Me <i class="fa-solid fa-arrow-right arrow"></i>
+                </a>
+
+                <button class="action-btn btn-secondary" onclick="downloadVCard()">
+                    <i class="fa-solid fa-download"></i> Save Contact
+                </button>
             </div>
 
-            <!-- ================= BACK SIDE ================= -->
-            <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 bg-[#0a101d] rounded-[32px] p-6 flex flex-col justify-between overflow-hidden border border-cyan-500/20">
-                
-                <!-- Background Wave Accent Flip -->
-                <div class="absolute top-0 left-0 right-0 h-40 wave-bg pointer-events-none"></div>
+            <!-- BACK SIDE -->
+            <div class="card-side card-back">
+                <div class="back-header">Let's Connect</div>
 
-
-<div class="relative z-10 flex justify-between items-center pt-1">
-    <button onclick="flipToFront()" title="Flip to Front Side" class="text-xs text-cyan-400 flex items-center gap-1.5 bg-slate-900/80 px-3 py-1 rounded-full border border-cyan-500/20 hover:border-cyan-500/50 hover:text-cyan-300 transition-all hover:scale-105 active:scale-95">
-    <i class="fa-solid fa-rotate"></i> Flip
-</button>
-    <span class="text-xs text-slate-400 tracking-wider uppercase font-semibold">Digital Card</span>
-</div>
-                
-                <!-- Section Title: Let's Connect -->
-                <div class="text-center mt-1 relative z-10">
-                    <h2 class="font-handwriting text-4xl sm:text-5xl text-cyan-400 font-bold tracking-wide">
-                        Let's Connect
-                    </h2>
+                <div class="qr-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BEGIN%3AVCARD%0AVERSION%3A3.0%0AN%3AAsuncion%3BRhiaren%0AFN%3ARhiaren+R.+Asuncion%0ATITLE%3ABarista+%2F+Social+Media+Manager+%2F+Graphic+Artist%0ATEL%3A09078506927%0AEMAIL%3Arhiarenasuncion12%40gmail.com%0AADR%3A%3B%3BAguso%3BTarlac+City%0AEND%3AVCARD" alt="QR Code" class="qr-code">
                 </div>
+                <div class="qr-subtext">Scan to Save Contact</div>
 
-                <!-- Interactive QR Code Section -->
-                <div class="flex flex-col items-center justify-center relative z-10 my-1">
-                    <div class="relative p-4 rounded-3xl bg-white border-2 border-cyan-500/60 shadow-[0_0_30px_rgba(0,210,255,0.35)]">
-                        <!-- Corner Accent Brackets -->
-                        <div class="absolute -top-2 -left-2 w-6 h-6 border-t-4 border-l-4 border-cyan-400 rounded-tl-lg"></div>
-                        <div class="absolute -top-2 -right-2 w-6 h-6 border-t-4 border-r-4 border-cyan-400 rounded-tr-lg"></div>
-                        <div class="absolute -bottom-2 -left-2 w-6 h-6 border-b-4 border-l-4 border-cyan-400 rounded-bl-lg"></div>
-                        <div class="absolute -bottom-2 -right-2 w-6 h-6 border-b-4 border-r-4 border-cyan-400 rounded-br-lg"></div>
-                        
-                        <!-- QRCode Target Element -->
-                        <div id="qrcode-canvas" class="w-36 h-36 flex items-center justify-center"></div>
+                <div class="info-list">
+                    <a href="tel:09078506927" class="info-pill">
+                        <i class="fa-solid fa-phone"></i>
+                        <span>09078506927</span>
+                    </a>
+                    <a href="mailto:rhiarenasuncion12@gmail.com" class="info-pill">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>rhiarenasuncion12@gmail.com</span>
+                    </a>
+                    <div class="info-pill">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Aguso Tarlac City</span>
                     </div>
-                    <span class="text-xs text-slate-300 font-medium mt-3 tracking-wide flex items-center gap-1.5">
-                        <i class="fa-solid fa-qrcode text-cyan-400"></i> Scan to Save Contact
-                    </span>
                 </div>
 
-                <!-- Contact Details List -->
-                <div class="space-y-2.5 relative z-10 my-1">
-                    
-                    <!-- Phone -->
-                   <div onclick="copyText('+639078506927', 'Phone number copied!')" class="group flex items-center gap-3.5 p-2.5 px-3.5 rounded-2xl bg-[#101828] border border-cyan-500/20 hover:border-cyan-500/50 cursor-pointer transition-all">
-    <div class="w-9 h-9 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shrink-0 group-hover:bg-cyan-400 group-hover:text-slate-950 transition-all">
-        <i class="fa-solid fa-phone text-sm"></i>
-    </div>
-    <div class="overflow-hidden">
-        <p class="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Phone</p>
-        <p class="text-xs sm:text-sm font-semibold text-slate-200 group-hover:text-cyan-400 truncate">+63 907-850-6927</p>
-    </div>
-</div>
-
-
-                    <!-- Email -->
-                    <div onclick="copyText('rhiarenasuncion12@gmail.com', 'Email copied!')" class="group flex items-center gap-3.5 p-2.5 px-3.5 rounded-2xl bg-[#101828] border border-cyan-500/20 hover:border-cyan-500/50 cursor-pointer transition-all">
-                        <div class="w-9 h-9 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shrink-0 group-hover:bg-cyan-400 group-hover:text-slate-950 transition-all">
-                            <i class="fa-solid fa-envelope text-sm"></i>
-                        </div>
-                        <div class="overflow-hidden">
-                            <p class="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Email</p>
-                            <p class="text-xs sm:text-sm font-semibold text-slate-200 group-hover:text-cyan-400 truncate">rhiarenasuncion12@gmail.com</p>
-                        </div>
-                    </div>
-
-                    <!-- Location -->
-                    <div onclick="copyText('Tarlac, Philippines', 'Location copied!')" class="group flex items-center gap-3.5 p-2.5 px-3.5 rounded-2xl bg-[#101828] border border-cyan-500/20 hover:border-cyan-500/50 cursor-pointer transition-all">
-                        <div class="w-9 h-9 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shrink-0 group-hover:bg-cyan-400 group-hover:text-slate-950 transition-all">
-                            <i class="fa-solid fa-location-dot text-sm"></i>
-                        </div>
-                        <div class="overflow-hidden">
-                            <p class="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Location</p>
-                            <p class="text-xs sm:text-sm font-semibold text-slate-200 group-hover:text-cyan-400 truncate">Tarlac, Philippines</p>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Cursive Footer Tagline -->
-                <div class="text-center pt-1 z-10">
-                    <p class="font-handwriting text-2xl text-slate-300 font-bold tracking-widest">
-                        Brew <span class="text-cyan-400">•</span> Create <span class="text-cyan-400">•</span> Connect
-                    </p>
-                </div>
-
+                <div class="motto">Create • Connect • Inspire</div>
             </div>
 
         </div>
     </div>
 
-    <!-- Notification Toast Popup -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 border border-cyan-500/50 text-slate-100 px-5 py-2.5 rounded-full text-xs font-medium shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
-        <i id="toast-icon" class="fa-solid fa-circle-check text-cyan-400"></i>
-        <span id="toast-message">Contact info copied!</span>
-    </div>
+    <!-- Clickable Flip Button -->
+    <button class="flip-control-btn" id="flipBtn" onclick="toggleCard()">
+        <i class="fa-solid fa-rotate"></i> <span id="btnText">Click to Show Back</span>
+    </button>
 
     <script>
-        // Card Flip Logic
-        const cardInner = document.getElementById('card-inner');
-        const showFrontBtn = document.getElementById('show-front-btn');
-        const showBackBtn = document.getElementById('show-back-btn');
+        const cardContainer = document.getElementById('cardContainer');
+        const btnText = document.getElementById('btnText');
 
-        function flipToBack() {
-            cardInner.classList.add('rotate-y-180');
-            showBackBtn.classList.add('bg-gradient-to-r', 'from-cyan-400', 'to-blue-500', 'text-slate-950', 'shadow-md');
-            showBackBtn.classList.remove('text-slate-400');
-            showFrontBtn.classList.remove('bg-gradient-to-r', 'from-cyan-400', 'to-blue-500', 'text-slate-950', 'shadow-md');
-            showFrontBtn.classList.add('text-slate-400');
+        // Click handler to toggle flip
+        function toggleCard() {
+            cardContainer.classList.toggle('flipped');
+            if (cardContainer.classList.contains('flipped')) {
+                btnText.textContent = "Click to Show Front";
+            } else {
+                btnText.textContent = "Click to Show Back";
+            }
         }
 
-        function flipToFront() {
-    cardInner.classList.remove('rotate-y-180');
-    showFrontBtn.classList.add('bg-gradient-to-r', 'from-cyan-400', 'to-blue-500', 'text-slate-950', 'shadow-md');
-    showFrontBtn.classList.remove('text-slate-400');
-    showBackBtn.classList.remove('bg-gradient-to-r', 'from-cyan-400', 'to-blue-500', 'text-slate-950', 'shadow-md');
-    showBackBtn.classList.add('text-slate-400');
-        }
-        
+        // Allow clicking anywhere on card to flip as well
+        cardContainer.addEventListener('click', (e) => {
+            if (e.target.closest('a') || e.target.closest('button')) return;
+            toggleCard();
+        });
 
-        
-
-
-        // vCard Data Payload Generation
-        function getVCardString() {
-            return [
-                'BEGIN:VCARD',
-                'VERSION:3.0',
-                'N:Asuncion;Rhiaren;R.;;',
-                'FN:Rhiaren R. Asuncion',
-                'TITLE:Barista | Social Media Manager | Graphic Artist',
-                'TEL;TYPE=CELL,VOICE:+639078506927',
-                'EMAIL;TYPE=INTERNET,WORK:rhiarenasuncion12@gmail.com',
-                'ADR;TYPE=WORK:;;Tarlac;;;Philippines',
-                'NOTE:Crafting bold visual identities, engaging social content, and the perfect cup of coffee.',
-                'END:VCARD'
-            ].join('\n');
-        }
-
-        // Download .vcf Contact File
+        // Function to download vCard
         function downloadVCard() {
-            const vCardData = getVCardString();
-            const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'Rhiaren_Asuncion_Contact.vcf');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            const vcardData = `BEGIN:VCARD
+VERSION:3.0
+FN:Rhiaren R. Asuncion
+TITLE:Barista / Social Media Manager / Graphic Artist
+TEL;TYPE=CELL:09078506927
+EMAIL:rhiarenasuncion12@gmail.com
+ADR;TYPE=HOME:;;Aguso;Tarlac City;;;
+END:VCARD`;
 
-            showToast('vCard downloaded to contacts!', 'fa-circle-check');
+            const blob = new Blob([vcardData], { type: 'text/vcard' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Rhiaren_Asuncion_Contact.vcf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
-
-        // Copy Text Helper
-        function copyText(text, message) {
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text);
-            } else {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-            }
-            showToast(message || 'Copied to clipboard!', 'fa-copy');
-        }
-
-        // Native Web Share API
-        function shareProfile() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Rhiaren R. Asuncion - Digital Business Card',
-                    text: 'Rhiaren R. Asuncion | Barista • Social Media Manager • Graphic Artist',
-                    url: window.location.href
-                }).catch(() => {});
-            } else {
-                copyText(window.location.href, 'Profile link copied to clipboard!');
-            }
-        }
-
-        // Toast Feedback System
-        function showToast(msg, iconClass = 'fa-circle-check') {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toast-message');
-            const toastIcon = document.getElementById('toast-icon');
-
-            toastMsg.textContent = msg;
-            toastIcon.className = `fa-solid ${iconClass} text-cyan-400`;
-
-            toast.classList.remove('opacity-0', 'pointer-events-none');
-            toast.classList.add('opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0', 'pointer-events-none');
-            }, 2500);
-        }
-
-        // Initialize QR Code on window load
-        window.onload = function() {
-            const qrContainer = document.getElementById('qrcode-canvas');
-            if (qrContainer && typeof QRCode !== 'undefined') {
-                new QRCode(qrContainer, {
-                    text: getVCardString(),
-                    width: 140,
-                    height: 140,
-                    colorDark: '#0a101d',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-            }
-        };
     </script>
 </body>
 </html>
