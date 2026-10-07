@@ -56,7 +56,7 @@
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Flipped Class Controlled via JS Click */
+        /* Flipped Class Controlled via JS Click on the bottom button */
         .card-container.flipped .card-inner {
             transform: rotateY(180deg);
         }
@@ -101,14 +101,30 @@
             text-align: center;
         }
 
+        /* Clickable Share Button */
         .share-btn {
             position: absolute;
             top: 20px;
             right: 20px;
+            background: var(--pill-bg);
+            border: 1px solid var(--pill-border);
             color: #fff;
-            font-size: 1.1rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
             cursor: pointer;
-            z-index: 10;
+            z-index: 100;
+            transition: all 0.2s ease;
+        }
+
+        .share-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            transform: scale(1.1);
         }
 
         .avatar-container {
@@ -121,6 +137,7 @@
             padding: 4px;
             background: conic-gradient(from 180deg, var(--accent-blue), transparent, var(--accent-blue));
             box-shadow: 0 0 20px var(--glow-blue);
+            cursor: pointer;
         }
 
         .avatar-img {
@@ -131,16 +148,29 @@
             background-color: #1a2a3a;
         }
 
-        .online-badge {
+        /* Small Camera Badge Icon */
+        .camera-badge {
             position: absolute;
-            bottom: 6px;
-            right: 6px;
-            width: 14px;
-            height: 14px;
-            background-color: var(--accent-blue);
+            bottom: 4px;
+            right: 4px;
+            width: 28px;
+            height: 28px;
+            background-color: var(--pill-bg);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
             border-radius: 50%;
-            border: 3px solid var(--card-bg);
-            box-shadow: 0 0 8px var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            box-shadow: 0 0 8px var(--glow-blue);
+            transition: all 0.2s ease;
+        }
+
+        .avatar-container:hover .camera-badge {
+            background-color: var(--accent-blue);
+            color: #000;
+            transform: scale(1.1);
         }
 
         .name-title {
@@ -293,6 +323,11 @@
             color: var(--text-sub);
             text-decoration: none;
             font-size: 0.82rem;
+            transition: all 0.2s ease;
+        }
+
+        .info-pill:hover {
+            border-color: var(--accent-blue);
         }
 
         .info-pill i {
@@ -344,18 +379,26 @@
 </head>
 <body>
 
-    <!-- Single Position Flip Container -->
+    <!-- Single Position Container -->
     <div class="card-container" id="cardContainer">
         <div class="card-inner">
             
             <!-- FRONT SIDE -->
             <div class="card-side card-front">
-                <div class="share-btn"><i class="fa-solid fa-share-nodes"></i></div>
+                <!-- Working Clickable Share Button -->
+                <button class="share-btn" onclick="shareCard(event)" title="Share Card">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </button>
                 
-                <div class="avatar-container">
-                    <img src="Rhia Asuncion.png" alt="Rhiaren R. Asuncion" class="avatar-img">
-                    <div class="online-badge"></div>
+                <!-- Profile Picture Container with Small Camera Badge Icon -->
+                <div class="avatar-container" onclick="triggerPhotoUpload()" title="Click to change photo">
+                    <img id="profileImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400" alt="Rhiaren R. Asuncion" class="avatar-img">
+                    <div class="camera-badge">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
                 </div>
+                <!-- Hidden file input for photo upload -->
+                <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="uploadPhoto(event)">
 
                 <div class="name-title">
                     RHIAREN R. ASUNCION <i class="fa-solid fa-circle-check verified-badge"></i>
@@ -364,7 +407,6 @@
                 
                 <p class="bio">Crafting experiences, managing brands, and creating visuals.</p>
 
-                <!-- Social Grid with Messenger, LinkedIn, and Instagram -->
                 <div class="social-grid">
                     <a href="https://m.me/rix.rayray" target="_blank" class="social-btn" title="Messenger">
                         <i class="fa-brands fa-facebook-messenger"></i>
@@ -404,10 +446,10 @@
                         <i class="fa-solid fa-envelope"></i>
                         <span>rhiarenasuncion12@gmail.com</span>
                     </a>
-                    <div class="info-pill">
+                    <a href="https://maps.app.goo.gl/ZRYKzEWYc2iMYm1S7" target="_blank" class="info-pill" title="Open Google Maps">
                         <i class="fa-solid fa-location-dot"></i>
                         <span>Aguso Tarlac City</span>
-                    </div>
+                    </a>
                 </div>
 
                 <div class="motto">Create • Connect • Inspire</div>
@@ -416,7 +458,7 @@
         </div>
     </div>
 
-    <!-- Clickable Flip Button -->
+    <!-- Exclusive Flip Button Below Card -->
     <button class="flip-control-btn" id="flipBtn" onclick="toggleCard()">
         <i class="fa-solid fa-rotate"></i> <span id="btnText">Click to Show Back</span>
     </button>
@@ -424,6 +466,34 @@
     <script>
         const cardContainer = document.getElementById('cardContainer');
         const btnText = document.getElementById('btnText');
+        const profileImg = document.getElementById('profileImg');
+        const photoInput = document.getElementById('photoInput');
+
+        // Load saved photo from localStorage if present
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedPhoto = localStorage.getItem('rhiaren_card_photo');
+            if (savedPhoto) {
+                profileImg.src = savedPhoto;
+            }
+        });
+
+        // Trigger file input when camera icon / avatar is clicked
+        function triggerPhotoUpload() {
+            photoInput.click();
+        }
+
+        // Process uploaded image and save locally
+        function uploadPhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileImg.src = e.target.result;
+                    localStorage.setItem('rhiaren_card_photo', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
         // Click handler to toggle flip
         function toggleCard() {
@@ -435,13 +505,28 @@
             }
         }
 
-        // Allow clicking anywhere on card to flip as well
-        cardContainer.addEventListener('click', (e) => {
-            if (e.target.closest('a') || e.target.closest('button')) return;
-            toggleCard();
-        });
+        // Share button function
+        function shareCard(event) {
+            // Kunin ang kasalukuyang URL ng site
+            const siteUrl = window.location.href;
 
-        // Function to download vCard
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Rhiaren R. Asuncion - Digital Business Card',
+                    text: 'Check out Rhiaren R. Asuncion\'s Digital Business Card!',
+                    url: siteUrl
+                }).catch((err) => console.log('Error sharing:', err));
+            } else {
+                // Fallback: Kopyahin ang link at mag-alert
+                navigator.clipboard.writeText(siteUrl).then(() => {
+                    alert('Link copied to clipboard:\n' + siteUrl);
+                }).catch(() => {
+                    prompt('Copy this link:', siteUrl);
+                });
+            }
+        }
+
+        // Function to download vCard (.vcf file)
         function downloadVCard() {
             const vcardData = `BEGIN:VCARD
 VERSION:3.0
